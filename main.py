@@ -8,6 +8,17 @@ SUSTAIN = 50
 led = Pin("LED", Pin.OUT)
 button = Pin(9,Pin.IN, Pin.PULL_DOWN)
 
+def bpm(n):
+  """returns the interval between the number of beats inputed"""
+  return 60/n
+
+async def pulse(led_pin, duration):
+  """prefered input state is led_pin.off()"""
+  led_pin.on()
+  await asyncio.sleep_ms(duration)
+  led_pin.off()
+  
+  
 # debounce
 async def debounce(input, sustain):
   # mögulega wrappa í while true?
@@ -26,9 +37,10 @@ async def debounce_test():
   task1 = asyncio.create_task(debounce(button, SUSTAIN))
   await asyncio.sleep(1000)
 
-def main():
-  return
-
+async def main():
+  while True:
+    await pulse(led_pin=led, duration=30)
+    await asyncio.sleep(bpm(180))
 #main()
 
-asyncio.run(debounce_test())
+asyncio.run(main())
