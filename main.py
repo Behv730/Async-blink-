@@ -2,7 +2,7 @@
 from machine import Pin
 import asyncio
 
-SUSTAIN = 50
+SUSTAIN = 70
 
 # Declare pins
 led = Pin("LED", Pin.OUT)
@@ -23,19 +23,29 @@ async def pulse(led_pin, duration):
 async def debounce(input, sustain):
   # mögulega wrappa í while true?
   state1 = input.value()
-  if state1 == 0:
-    return 0
-  
+  # exit if button is off
+  # while True:
+    # if state1 == 0:
+    #   print("exited with state1 == 0")
+    #   return 0
+    
   await asyncio.sleep_ms(sustain)
   state2 = input.value()
   if state1 == state2:
-    print(f"state = {state1}")
-    led.toggle()
-    return 1
+    print("-------------------")
+    print(f"state1 = {state1}")
+    print(f"state2 = {state2}")
+    # led.toggle() # for testing
+    return state1
 
 async def debounce_test():
   task1 = asyncio.create_task(debounce(button, SUSTAIN))
-  await asyncio.sleep(1000)
+  while True:
+    # await task1
+    if await debounce(button, SUSTAIN):
+      led.toggle()
+    
+
 
 async def main():
   while True:
@@ -43,4 +53,4 @@ async def main():
     await asyncio.sleep(bpm(180))
 #main()
 
-asyncio.run(main())
+asyncio.run(debounce_test())
