@@ -1,4 +1,6 @@
-# Virkar, micropython v1.23.0, latest at the time
+# Virkar, micropython v1.23.0, latest at the time. not the same one in opt/homebrew/bin/
+# https://docs.micropython.org/en/v1.23.0/library/asyncio.html#asyncio.Loop
+
 import asyncio
 from machine import Pin
 
@@ -7,7 +9,7 @@ async def blink(led, period_ms):
         led.on()
         await asyncio.sleep_ms(5)
         led.off()
-        await asyncio.sleep_ms(period_ms)
+        await asyncio.sleep_ms(period_ms) # type: ignore
 
 async def main(led1, led2):
     asyncio.create_task(blink(led1, 700))
