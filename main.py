@@ -21,14 +21,14 @@ async def pulse(led_pin, duration):
   
 async def debounce(input, sustain):
   """take samples sustain ms apart, if values match return value."""
-  
-  state1 = input.value()
-  await asyncio.sleep_ms(sustain)
-  state2 = input.value()
-  if state1 == state2:
-    print(f"debounce = {state1}{state2}")
-    # led.toggle() # for testing
-    return state1
+  while True:
+    state1 = input.value()
+    await asyncio.sleep_ms(sustain)
+    state2 = input.value()
+    if state1 and state2 == 1:
+      print(f"debounce = {state1}{state2}")
+      # led.toggle() # for testing
+      return 1
 
 async def debounce_test():
   task1 = asyncio.create_task(debounce(button, SUSTAIN))
@@ -38,20 +38,21 @@ async def debounce_test():
       led.toggle()
     
 
-
+press = asyncio.create_task(debounce(button, SUSTAIN))
 async def main():
   while True: # main loop
     # toggle between 2 states, blink/pulse and off
-    if await debounce(button, SUSTAIN):
+    if await press:
       while True:
         await pulse(led_pin=led, duration=30)  
         await asyncio.sleep(bpm(180))
-        if await debounce(button, SUSTAIN):
+        if await press:
           break
     else:
       while True:
         led.off()
-        if await debounce(button, SUSTAIN):
+        if await press:
           break
 
-asyncio.run(main())
+asyncio.create_task(main())
+asyncio.run(main(), press)
