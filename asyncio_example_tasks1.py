@@ -61,4 +61,20 @@ async def main_sleep():
           break
       await asyncio.sleep(1)
         
-asyncio.run(main2())
+async def waiter(event):
+	print('waiting for it ...')
+	await event.wait()
+	print('... go for it')
+
+async def main_waiter():
+	event = asyncio.Event()
+	# spawna taskið
+	waiter_task = asyncio.create_task(waiter(event))
+	# bíða í 10sec og setja svo eventið
+	await asyncio.sleep(2)
+	event.set()
+	# bíða eftir því að waiter taskið er búið
+	await waiter_task
+
+asyncio.run(main_waiter())
+# asyncio.run(main2())
